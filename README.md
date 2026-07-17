@@ -111,3 +111,7 @@ yarn wrangler secret put BOOTSTRAP_SECRET
 ```
 
 Configura `ENVIRONMENT=production`, los origenes reales y la base D1 remota. No ejecutes la migracion remota hasta comprobar que estas usando la cuenta correcta de Cloudflare.
+
+El panel administrativo consume esta API mediante una Pages Function y un
+Service Binding llamado `API_SERVICE`. Las cookies se entregan desde el dominio
+del panel y usan `SameSite=Lax`.

@@ -34,7 +34,7 @@ function getCookieOptions(context: Context<AppEnv>) {
     path: '/',
     httpOnly: true,
     secure: production,
-    sameSite: production ? 'None' as const : 'Lax' as const,
+    sameSite: 'Lax' as const,
     maxAge: getSessionTtl(context),
   }
 }
