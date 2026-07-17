@@ -78,6 +78,9 @@ POST /api/v1/auth/change-password
 POST /api/v1/auth/logout
 
 GET  /api/v1/admin/users
+POST /api/v1/admin/users
+PATCH /api/v1/admin/users/:userId/permissions
+DELETE /api/v1/admin/users/:userId
 
 GET    /api/v1/admin/catalog/provinces
 GET    /api/v1/admin/catalog/activities
@@ -96,11 +99,13 @@ POST   /api/v1/admin/sites/trash/:siteId/restore
 DELETE /api/v1/admin/sites/trash/:siteId
 ```
 
-`GET /api/v1/admin/users` requiere autenticacion, cambio de contrasena completado y el permiso `manage_users`.
+El listado de usuarios requiere `manage_users` o `manage_permissions`. Crear y
+eliminar usuarios requiere `manage_users`, mientras que modificar permisos
+requiere `manage_permissions`.
 
 ## Seguridad implementada
 
-- PBKDF2-HMAC-SHA256 con sal unica y 600,000 iteraciones.
+- PBKDF2-HMAC-SHA256 con sal unica y 100,000 iteraciones.
 - Tokens de sesion aleatorios y solo su hash se almacena en D1.
 - Cookie `HttpOnly`.
 - Renovacion de sesion por actividad.
@@ -109,6 +114,8 @@ DELETE /api/v1/admin/sites/trash/:siteId
 - Cambio obligatorio de contrasena.
 - Cinco intentos fallidos producen un bloqueo temporal de 15 minutos.
 - Permisos verificados dentro del Worker.
+- El administrador principal no puede eliminarse ni perder permisos.
+- Eliminar un usuario invalida inmediatamente todas sus sesiones.
 
 ## Verificacion
 
