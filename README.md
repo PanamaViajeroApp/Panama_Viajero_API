@@ -78,6 +78,22 @@ POST /api/v1/auth/change-password
 POST /api/v1/auth/logout
 
 GET  /api/v1/admin/users
+
+GET    /api/v1/admin/catalog/provinces
+GET    /api/v1/admin/catalog/activities
+POST   /api/v1/admin/catalog/activities
+
+GET    /api/v1/admin/sites?status=draft
+GET    /api/v1/admin/sites?status=published
+GET    /api/v1/admin/sites/:siteId
+POST   /api/v1/admin/sites
+PATCH  /api/v1/admin/sites/:siteId
+POST   /api/v1/admin/sites/:siteId/publish
+DELETE /api/v1/admin/sites/:siteId
+
+GET    /api/v1/admin/sites/trash/items
+POST   /api/v1/admin/sites/trash/:siteId/restore
+DELETE /api/v1/admin/sites/trash/:siteId
 ```
 
 `GET /api/v1/admin/users` requiere autenticacion, cambio de contrasena completado y el permiso `manage_users`.
@@ -115,3 +131,7 @@ Configura `ENVIRONMENT=production`, los origenes reales y la base D1 remota. No 
 El panel administrativo consume esta API mediante una Pages Function y un
 Service Binding llamado `API_SERVICE`. Las cookies se entregan desde el dominio
 del panel y usan `SameSite=Lax`.
+
+Los sitios eliminados conservan su estado original durante 50 dias. Un trigger
+programado se ejecuta todos los dias a las 08:15 UTC para eliminar de D1 los
+registros cuyo `purge_at` haya vencido.

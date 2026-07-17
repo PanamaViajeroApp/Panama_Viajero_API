@@ -1,10 +1,19 @@
 import { Hono } from 'hono'
-import { requireAuth, requirePermission } from '../middleware/auth'
+import catalog from './catalog'
+import sites from './sites'
+import {
+  requireAuth,
+  requireCompletedPasswordChange,
+  requirePermission,
+} from '../middleware/auth'
 import type { AppEnv } from '../types'
 
 const admin = new Hono<AppEnv>()
 
 admin.use('*', requireAuth)
+admin.use('*', requireCompletedPasswordChange)
+admin.route('/catalog', catalog)
+admin.route('/sites', sites)
 
 admin.get(
   '/users',

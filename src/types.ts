@@ -3,7 +3,7 @@ export type Bindings = {
   ENVIRONMENT: string
   ALLOWED_ORIGINS: string
   SESSION_TTL_SECONDS: string
-  BOOTSTRAP_SECRET: string
+  BOOTSTRAP_SECRET?: string
 }
 
 export type PermissionKey =

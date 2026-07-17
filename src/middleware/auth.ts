@@ -19,25 +19,52 @@ export const requireAuth: MiddlewareHandler<AppEnv> = async (
   await next()
 }
 
+export const requireCompletedPasswordChange: MiddlewareHandler<AppEnv> = async (
+  context,
+  next,
+) => {
+  const authUser = context.get('authUser')
+
+  if (authUser.mustChangePassword) {
+    return context.json({
+      ok: false,
+      error: 'Password change required',
+      code: 'PASSWORD_CHANGE_REQUIRED',
+    }, 403)
+  }
+
+  await next()
+}
+
 export function requirePermission(
   permission: PermissionKey,
 ): MiddlewareHandler<AppEnv> {
   return async (context, next) => {
     const authUser = context.get('authUser')
 
-    if (authUser.mustChangePassword) {
-      return context.json({
-        ok: false,
-        error: 'Password change required',
-        code: 'PASSWORD_CHANGE_REQUIRED',
-      }, 403)
-    }
-
     if (!authUser.permissions[permission]) {
       return context.json({
         ok: false,
         error: 'Insufficient permissions',
         permission,
+      }, 403)
+    }
+
+    await next()
+  }
+}
+
+export function requireAnyPermission(
+  permissions: PermissionKey[],
+): MiddlewareHandler<AppEnv> {
+  return async (context, next) => {
+    const authUser = context.get('authUser')
+
+    if (!permissions.some((permission) => authUser.permissions[permission])) {
+      return context.json({
+        ok: false,
+        error: 'Insufficient permissions',
+        permissions,
       }, 403)
     }
 

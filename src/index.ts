@@ -4,7 +4,8 @@ import admin from './routes/admin'
 import auth from './routes/auth'
 import health from './routes/health'
 import { getAllowedOrigins, requireTrustedOrigin } from './middleware/security'
-import type { AppEnv } from './types'
+import { purgeExpiredSites } from './lib/purge'
+import type { AppEnv, Bindings } from './types'
 
 const app = new Hono<AppEnv>()
 
@@ -47,4 +48,19 @@ app.onError((error, context) => {
   }, 500)
 })
 
-export default app
+export default {
+  fetch(
+    request: Request,
+    environment: Bindings,
+    executionContext: ExecutionContext,
+  ) {
+    return app.fetch(request, environment, executionContext)
+  },
+  scheduled(
+    _event: ScheduledEvent,
+    environment: Bindings,
+    executionContext: ExecutionContext,
+  ) {
+    executionContext.waitUntil(purgeExpiredSites(environment.DB))
+  },
+}

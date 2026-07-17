@@ -6,6 +6,9 @@
   "observability": {
     "enabled": true
   },
+  "triggers": {
+    "crons": ["15 8 * * *"]
+  },
   "vars": {
     "ENVIRONMENT": "production",
     "ALLOWED_ORIGINS": "https://panama-viajero-admin.pages.dev,https://panama-viajero-7jh.pages.dev",
