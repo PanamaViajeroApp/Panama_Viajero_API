@@ -1,0 +1,26 @@
+{
+  "name": "panama-viajero-api",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "yarn@1.22.22",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "build": "wrangler deploy --dry-run --outdir dist",
+    "lint": "oxlint",
+    "typecheck": "tsc --noEmit",
+    "db:migrate:local": "wrangler d1 migrations apply panama-viajero-db --local",
+    "db:migrate:remote": "wrangler d1 migrations apply panama-viajero-db --remote",
+    "db:seed:local": "wrangler d1 execute panama-viajero-db --local --file=./seeds/local.sql"
+  },
+  "dependencies": {
+    "hono": "^4.12.30"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^5.20260716.1",
+    "oxlint": "^1.74.0",
+    "typescript": "5.9.3",
+    "wrangler": "^4.111.0"
+  }
+}

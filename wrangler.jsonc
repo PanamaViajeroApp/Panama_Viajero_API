@@ -1,0 +1,20 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "panama-viajero-api",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-07-16",
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    "ENVIRONMENT": "production",
+    "ALLOWED_ORIGINS": "https://panama-viajero-admin.pages.dev,https://panama-viajero.pages.dev",
+    "SESSION_TTL_SECONDS": "28800"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "panama-viajero-db"
+    }
+  ]
+}

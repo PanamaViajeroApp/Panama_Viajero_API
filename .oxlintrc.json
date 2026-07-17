@@ -1,0 +1,9 @@
+{
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn"
+  },
+  "ignorePatterns": [
+    ".wrangler/**"
+  ]
+}
