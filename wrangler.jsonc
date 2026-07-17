@@ -19,5 +19,11 @@
       "binding": "DB",
       "database_name": "panama-viajero-db"
     }
+  ],
+  "r2_buckets": [
+    {
+      "binding": "IMAGES",
+      "bucket_name": "panama-viajero-images"
+    }
   ]
 }

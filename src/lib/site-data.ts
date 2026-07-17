@@ -9,6 +9,7 @@ export type SiteActivity = {
 export type SiteImage = {
   id: string
   r2Key: string
+  url: string
   imageType: 'banner' | 'gallery'
   sortOrder: number
   mimeType: string
@@ -112,6 +113,7 @@ const siteSelect = `
       SELECT json_group_array(json_object(
         'id', ordered_images.id,
         'r2Key', ordered_images.r2_key,
+        'url', '/api/v1/admin/media/' || ordered_images.id,
         'imageType', ordered_images.image_type,
         'sortOrder', ordered_images.sort_order,
         'mimeType', ordered_images.mime_type,

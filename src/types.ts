@@ -1,5 +1,6 @@
 export type Bindings = {
   DB: D1Database
+  IMAGES: R2Bucket
   ENVIRONMENT: string
   ALLOWED_ORIGINS: string
   SESSION_TTL_SECONDS: string

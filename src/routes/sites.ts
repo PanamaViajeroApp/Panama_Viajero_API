@@ -574,7 +574,7 @@ sites.delete(
 )
 
 sites.get('/trash/items', async (context) => {
-  await purgeExpiredSites(context.env.DB)
+  await purgeExpiredSites(context.env.DB, context.env.IMAGES)
   return context.json({
     ok: true,
     sites: await listSites(context.env.DB, { deleted: true }),
@@ -627,6 +627,12 @@ sites.delete(
 
     if (!site?.deletedAt) {
       return context.json({ ok: false, error: 'Deleted site not found' }, 404)
+    }
+
+    if (site.images.length > 0) {
+      await context.env.IMAGES.delete(
+        site.images.map((image) => image.r2Key),
+      )
     }
 
     await context.env.DB

@@ -8,6 +8,7 @@ API independiente para conectar el panel administrativo y la pagina publica de P
 - TypeScript
 - Hono
 - Cloudflare D1
+- Cloudflare R2
 - Wrangler
 - Yarn Classic
 
@@ -94,6 +95,12 @@ PATCH  /api/v1/admin/sites/:siteId
 POST   /api/v1/admin/sites/:siteId/publish
 DELETE /api/v1/admin/sites/:siteId
 
+POST   /api/v1/admin/sites/:siteId/images
+DELETE /api/v1/admin/sites/:siteId/images/:imageId
+
+GET    /api/v1/admin/media/:imageId
+GET    /api/v1/media/:imageId
+
 GET    /api/v1/admin/sites/trash/items
 POST   /api/v1/admin/sites/trash/:siteId/restore
 DELETE /api/v1/admin/sites/trash/:siteId
@@ -134,6 +141,12 @@ yarn wrangler secret put BOOTSTRAP_SECRET
 ```
 
 Configura `ENVIRONMENT=production`, los origenes reales y la base D1 remota. No ejecutes la migracion remota hasta comprobar que estas usando la cuenta correcta de Cloudflare.
+
+La API requiere un bucket R2 llamado `panama-viajero-images`, conectado al
+Worker mediante el binding `IMAGES`. Solo acepta archivos WebP validos de hasta
+10 MB y permite un maximo de 30 imagenes de galeria por sitio. Reemplazar el
+banner o eliminar definitivamente un sitio tambien elimina los objetos
+anteriores de R2.
 
 El panel administrativo consume esta API mediante una Pages Function y un
 Service Binding llamado `API_SERVICE`. Las cookies se entregan desde el dominio

@@ -3,6 +3,7 @@ import { cors } from 'hono/cors'
 import admin from './routes/admin'
 import auth from './routes/auth'
 import health from './routes/health'
+import media from './routes/media'
 import { getAllowedOrigins, requireTrustedOrigin } from './middleware/security'
 import { purgeExpiredSites } from './lib/purge'
 import type { AppEnv, Bindings } from './types'
@@ -31,6 +32,7 @@ app.get('/', (context) => context.json({
 }))
 
 app.route('/api/v1', health)
+app.route('/api/v1/media', media)
 app.route('/api/v1/auth', auth)
 app.route('/api/v1/admin', admin)
 
@@ -61,6 +63,8 @@ export default {
     environment: Bindings,
     executionContext: ExecutionContext,
   ) {
-    executionContext.waitUntil(purgeExpiredSites(environment.DB))
+    executionContext.waitUntil(
+      purgeExpiredSites(environment.DB, environment.IMAGES),
+    )
   },
 }
