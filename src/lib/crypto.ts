@@ -1,6 +1,6 @@
 const encoder = new TextEncoder()
 const passwordAlgorithm = 'pbkdf2-sha256'
-const passwordIterations = 600_000
+const passwordIterations = 100_000
 const passwordHashLength = 32
 const passwordSaltLength = 16
 
