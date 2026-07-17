@@ -4,13 +4,14 @@ import admin from './routes/admin'
 import auth from './routes/auth'
 import health from './routes/health'
 import media from './routes/media'
+import publicSites from './routes/public-sites'
 import { getAllowedOrigins, requireTrustedOrigin } from './middleware/security'
 import { purgeExpiredSites } from './lib/purge'
 import type { AppEnv, Bindings } from './types'
 
 const app = new Hono<AppEnv>()
 
-app.use('/api/*', cors({
+const trustedCors = cors({
   origin: (origin, context) => (
     getAllowedOrigins(context.env.ALLOWED_ORIGINS).includes(origin)
       ? origin
@@ -20,9 +21,22 @@ app.use('/api/*', cors({
   allowHeaders: ['Content-Type', 'X-Bootstrap-Secret'],
   credentials: true,
   maxAge: 600,
-}))
+})
 
-app.use('/api/*', requireTrustedOrigin)
+app.use('/api/v1/auth/*', trustedCors)
+app.use('/api/v1/admin/*', trustedCors)
+app.use('/api/v1/auth/*', requireTrustedOrigin)
+app.use('/api/v1/admin/*', requireTrustedOrigin)
+app.use('/api/v1/public/*', cors({
+  origin: '*',
+  allowMethods: ['GET', 'OPTIONS'],
+  maxAge: 600,
+}))
+app.use('/api/v1/media/*', cors({
+  origin: '*',
+  allowMethods: ['GET', 'HEAD', 'OPTIONS'],
+  maxAge: 600,
+}))
 
 app.get('/', (context) => context.json({
   ok: true,
@@ -33,6 +47,7 @@ app.get('/', (context) => context.json({
 
 app.route('/api/v1', health)
 app.route('/api/v1/media', media)
+app.route('/api/v1/public/sites', publicSites)
 app.route('/api/v1/auth', auth)
 app.route('/api/v1/admin', admin)
 

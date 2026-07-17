@@ -101,6 +101,9 @@ DELETE /api/v1/admin/sites/:siteId/images/:imageId
 GET    /api/v1/admin/media/:imageId
 GET    /api/v1/media/:imageId
 
+GET    /api/v1/public/sites
+GET    /api/v1/public/sites/:slug
+
 GET    /api/v1/admin/sites/trash/items
 POST   /api/v1/admin/sites/trash/:siteId/restore
 DELETE /api/v1/admin/sites/trash/:siteId

@@ -22,6 +22,7 @@ export type SiteRecord = {
   id: string
   slug: string
   name: string
+  previewDescription: string
   description: string
   location: string
   mapUrl: string
@@ -50,6 +51,7 @@ type SiteRow = {
   id: string
   slug: string
   name: string
+  preview_description: string
   description: string
   location: string
   map_url: string
@@ -77,6 +79,7 @@ const siteSelect = `
     s.id,
     s.slug,
     s.name,
+    s.preview_description,
     s.description,
     s.location,
     s.map_url,
@@ -160,6 +163,7 @@ function mapSiteRow(row: SiteRow): SiteRecord {
     id: row.id,
     slug: row.slug,
     name: row.name,
+    previewDescription: row.preview_description,
     description: row.description,
     location: row.location,
     mapUrl: row.map_url,
@@ -225,6 +229,25 @@ export async function getSiteById(
       LIMIT 1
     `)
     .bind(siteId)
+    .first<SiteRow>()
+
+  return row ? mapSiteRow(row) : null
+}
+
+export async function getPublishedSiteBySlug(
+  database: D1Database,
+  slug: string,
+): Promise<SiteRecord | null> {
+  const row = await database
+    .prepare(`
+      ${siteSelect}
+      WHERE
+        s.slug = ?
+        AND s.status = 'published'
+        AND s.deleted_at IS NULL
+      LIMIT 1
+    `)
+    .bind(slug)
     .first<SiteRow>()
 
   return row ? mapSiteRow(row) : null

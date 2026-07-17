@@ -24,6 +24,7 @@ type ProvinceRow = {
 
 type SiteInput = {
   name: string
+  previewDescription: string
   description: string
   location: string
   mapUrl: string
@@ -71,6 +72,9 @@ function parseSiteInput(body: unknown): {
 
   const record = body as Record<string, unknown>
   const name = typeof record.name === 'string' ? record.name.trim() : ''
+  const previewDescription = typeof record.previewDescription === 'string'
+    ? record.previewDescription.trim()
+    : ''
   const description = typeof record.description === 'string'
     ? record.description.trim()
     : ''
@@ -105,6 +109,12 @@ function parseSiteInput(body: unknown): {
     return { error: 'Description must contain between 10 and 5000 characters' }
   }
 
+  if (previewDescription.length < 10 || previewDescription.length > 500) {
+    return {
+      error: 'Preview description must contain between 10 and 500 characters',
+    }
+  }
+
   if (location.length < 2 || location.length > 220) {
     return { error: 'Location must contain between 2 and 220 characters' }
   }
@@ -124,6 +134,7 @@ function parseSiteInput(body: unknown): {
   return {
     input: {
       name,
+      previewDescription,
       description,
       location,
       mapUrl,
@@ -332,6 +343,7 @@ sites.post(
             id,
             slug,
             name,
+            preview_description,
             description,
             location,
             map_url,
@@ -343,12 +355,13 @@ sites.post(
             updated_by,
             created_at,
             updated_at
-          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?, ?)
+          ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'draft', ?, ?, ?, ?)
         `)
         .bind(
           siteId,
           slug,
           parsedBody.input.name,
+          parsedBody.input.previewDescription,
           parsedBody.input.description,
           parsedBody.input.location,
           parsedBody.input.mapUrl,
@@ -407,6 +420,8 @@ sites.patch(
     )
     const parsedBody = parseSiteInput({
       name: requestBody.name ?? currentSite.name,
+      previewDescription: requestBody.previewDescription
+        ?? currentSite.previewDescription,
       description: requestBody.description ?? currentSite.description,
       location: requestBody.location ?? currentSite.location,
       mapUrl: requestBody.mapUrl ?? currentSite.mapUrl,
@@ -447,6 +462,7 @@ sites.patch(
           UPDATE sites
           SET
             name = ?,
+            preview_description = ?,
             description = ?,
             location = ?,
             map_url = ?,
@@ -459,6 +475,7 @@ sites.patch(
         `)
         .bind(
           parsedBody.input.name,
+          parsedBody.input.previewDescription,
           parsedBody.input.description,
           parsedBody.input.location,
           parsedBody.input.mapUrl,
