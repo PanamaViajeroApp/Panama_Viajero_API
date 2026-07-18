@@ -31,7 +31,12 @@ type SiteInput = {
   province: string
   zone: 'costa_arriba' | 'costa_abajo' | null
   isPacificRiviera: boolean
-  activities: string[]
+  activities: SiteActivityInput[]
+}
+
+type SiteActivityInput = {
+  name: string
+  description: string
 }
 
 function normalizeComparable(value: string): string {
@@ -95,10 +100,32 @@ function parseSiteInput(body: unknown): {
     : []
   const activities = Array.from(new Map(
     rawActivities
-      .filter((activity): activity is string => typeof activity === 'string')
-      .map((activity) => activity.trim())
-      .filter(Boolean)
-      .map((activity) => [normalizeComparable(activity), activity]),
+      .map((activity): SiteActivityInput | null => {
+        if (typeof activity === 'string') {
+          const legacyActivityName = activity.trim()
+          return legacyActivityName
+            ? { name: legacyActivityName, description: '' }
+            : null
+        }
+
+        if (!activity || typeof activity !== 'object' || Array.isArray(activity)) {
+          return null
+        }
+
+        const activityRecord = activity as Record<string, unknown>
+        const activityName = typeof activityRecord.name === 'string'
+          ? activityRecord.name.trim()
+          : ''
+        const activityDescription = typeof activityRecord.description === 'string'
+          ? activityRecord.description.trim()
+          : ''
+
+        return activityName
+          ? { name: activityName, description: activityDescription }
+          : null
+      })
+      .filter((activity): activity is SiteActivityInput => activity !== null)
+      .map((activity) => [normalizeComparable(activity.name), activity]),
   ).values())
 
   if (name.length < 2 || name.length > 160) {
@@ -127,8 +154,17 @@ function parseSiteInput(body: unknown): {
     return { error: 'Province is required' }
   }
 
-  if (activities.length > 50 || activities.some((activity) => activity.length > 80)) {
+  if (
+    activities.length > 50
+    || activities.some((activity) => activity.name.length > 80)
+  ) {
     return { error: 'A site can contain up to 50 activities of 80 characters each' }
+  }
+
+  if (activities.some((activity) => activity.description.length > 1000)) {
+    return {
+      error: 'Activity descriptions can contain up to 1000 characters',
+    }
   }
 
   return {
@@ -215,10 +251,10 @@ async function createUniqueSlug(
 function createActivityStatements(
   database: D1Database,
   siteId: string,
-  activities: string[],
+  activities: SiteActivityInput[],
   now: string,
 ): D1PreparedStatement[] {
-  return activities.flatMap((activityName) => {
+  return activities.flatMap((activity) => {
     const activityId = crypto.randomUUID()
 
     return [
@@ -236,20 +272,21 @@ function createActivityStatements(
         `)
         .bind(
           activityId,
-          activityName,
-          getActivityIconKey(activityName),
+          activity.name,
+          getActivityIconKey(activity.name),
           now,
           now,
         ),
       database
         .prepare(`
-          INSERT INTO site_activities (site_id, activity_id)
-          SELECT ?, id
+          INSERT INTO site_activities (site_id, activity_id, description)
+          SELECT ?, id, ?
           FROM activities
           WHERE name = ? COLLATE NOCASE
-          ON CONFLICT(site_id, activity_id) DO NOTHING
+          ON CONFLICT(site_id, activity_id) DO UPDATE SET
+            description = excluded.description
         `)
-        .bind(siteId, activityName),
+        .bind(siteId, activity.description, activity.name),
     ]
   })
 }
@@ -431,7 +468,10 @@ sites.patch(
         ? requestBody.isPacificRiviera
         : currentSite.isPacificRiviera,
       activities: requestBody.activities
-        ?? currentSite.activities.map((activity) => activity.name),
+        ?? currentSite.activities.map((activity) => ({
+          name: activity.name,
+          description: activity.description,
+        })),
     })
 
     if (!parsedBody.input) {

@@ -4,6 +4,7 @@ export type SiteActivity = {
   id: string
   name: string
   iconKey: string
+  description: string
 }
 
 export type SiteImage = {
@@ -102,10 +103,11 @@ const siteSelect = `
       SELECT json_group_array(json_object(
         'id', ordered_activities.id,
         'name', ordered_activities.name,
-        'iconKey', ordered_activities.icon_key
+        'iconKey', ordered_activities.icon_key,
+        'description', ordered_activities.description
       ))
       FROM (
-        SELECT a.id, a.name, a.icon_key
+        SELECT a.id, a.name, a.icon_key, sa.description
         FROM site_activities sa
         INNER JOIN activities a ON a.id = sa.activity_id
         WHERE sa.site_id = s.id
