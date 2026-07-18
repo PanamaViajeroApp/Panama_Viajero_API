@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "panama-viajero-api",
+  "name": "panamaviajeroapi",
   "main": "src/index.ts",
   "compatibility_date": "2026-07-16",
   "observability": {
