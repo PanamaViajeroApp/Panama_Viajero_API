@@ -11,13 +11,14 @@
   },
   "vars": {
     "ENVIRONMENT": "production",
-    "ALLOWED_ORIGINS": "https://panama-viajero-admin.pages.dev,https://panama-viajero-7jh.pages.dev",
+    "ALLOWED_ORIGINS": "https://panama-viajero-admin-j11.pages.dev,https://panama-viajero.pages.dev",
     "SESSION_TTL_SECONDS": "28800"
   },
   "d1_databases": [
     {
       "binding": "DB",
-      "database_name": "panama-viajero-db"
+      "database_name": "panama-viajero-db",
+      "database_id": "ae410d03-3d16-433a-8521-fb7bd0dc2fc6"
     }
   ],
   "r2_buckets": [
