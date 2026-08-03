@@ -26,9 +26,11 @@ const trustedCors = cors({
 
 app.use('/api/v1/auth/*', trustedCors)
 app.use('/api/v1/admin/*', trustedCors)
+app.use('/api/v1/preregistrations', trustedCors)
 app.use('/api/v1/preregistrations/*', trustedCors)
 app.use('/api/v1/auth/*', requireTrustedOrigin)
 app.use('/api/v1/admin/*', requireTrustedOrigin)
+app.use('/api/v1/preregistrations', requireTrustedOrigin)
 app.use('/api/v1/preregistrations/*', requireTrustedOrigin)
 app.use('/api/v1/public/*', cors({
   origin: '*',
