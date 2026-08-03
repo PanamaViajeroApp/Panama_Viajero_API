@@ -46,9 +46,10 @@ preregistrations.post('/', async (context) => {
 
   const supabaseUrl = context.env.SUPABASE_URL?.replace(/\/$/, '')
   const supabaseKey = context.env.SUPABASE_SERVICE_ROLE_KEY
+  const appsScriptUrl = context.env.APPS_SCRIPT_URL
 
-  if (!supabaseUrl || !supabaseKey) {
-    console.error('Supabase secrets are not configured')
+  if (!supabaseUrl || !supabaseKey || !appsScriptUrl) {
+    console.error('Preregistration services are not configured')
     return context.json({ ok: false, error: 'Registration service unavailable' }, 503)
   }
 
@@ -79,6 +80,27 @@ preregistrations.post('/', async (context) => {
   if (!response.ok) {
     console.error('Supabase preregistration failed', response.status, await response.text())
     return context.json({ ok: false, error: 'Registration service unavailable' }, 502)
+  }
+
+  const appsScriptResponse = await fetch(appsScriptUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded;charset=UTF-8',
+    },
+    body: new URLSearchParams({
+      fullName,
+      phone,
+      email,
+      acceptedPrivacyPolicy: String(acceptedPrivacyPolicy),
+    }).toString(),
+  })
+
+  if (!appsScriptResponse.ok) {
+    console.error('Apps Script preregistration failed', appsScriptResponse.status)
+    return context.json({
+      ok: false,
+      error: 'El registro fue guardado, pero no se pudo enviar el correo',
+    }, 502)
   }
 
   return context.json({

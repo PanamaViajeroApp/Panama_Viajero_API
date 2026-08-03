@@ -7,6 +7,7 @@ export type Bindings = {
   BOOTSTRAP_SECRET?: string
   SUPABASE_URL?: string
   SUPABASE_SERVICE_ROLE_KEY?: string
+  APPS_SCRIPT_URL?: string
 }
 
 export type PermissionKey =
