@@ -5,6 +5,8 @@ export type Bindings = {
   ALLOWED_ORIGINS: string
   SESSION_TTL_SECONDS: string
   BOOTSTRAP_SECRET?: string
+  SUPABASE_URL?: string
+  SUPABASE_SERVICE_ROLE_KEY?: string
 }
 
 export type PermissionKey =

@@ -5,6 +5,7 @@ import auth from './routes/auth'
 import health from './routes/health'
 import media from './routes/media'
 import publicSites from './routes/public-sites'
+import preregistrations from './routes/preregistrations'
 import { getAllowedOrigins, requireTrustedOrigin } from './middleware/security'
 import { purgeExpiredSites } from './lib/purge'
 import type { AppEnv, Bindings } from './types'
@@ -25,8 +26,10 @@ const trustedCors = cors({
 
 app.use('/api/v1/auth/*', trustedCors)
 app.use('/api/v1/admin/*', trustedCors)
+app.use('/api/v1/preregistrations/*', trustedCors)
 app.use('/api/v1/auth/*', requireTrustedOrigin)
 app.use('/api/v1/admin/*', requireTrustedOrigin)
+app.use('/api/v1/preregistrations/*', requireTrustedOrigin)
 app.use('/api/v1/public/*', cors({
   origin: '*',
   allowMethods: ['GET', 'OPTIONS'],
@@ -48,6 +51,7 @@ app.get('/', (context) => context.json({
 app.route('/api/v1', health)
 app.route('/api/v1/media', media)
 app.route('/api/v1/public/sites', publicSites)
+app.route('/api/v1/preregistrations', preregistrations)
 app.route('/api/v1/auth', auth)
 app.route('/api/v1/admin', admin)
 
